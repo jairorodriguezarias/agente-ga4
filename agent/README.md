@@ -43,7 +43,7 @@ Asegúrate de tener instalado:
     ```
 
 3.  **Autenticación con Google Cloud**:
-    Asegúrate de haber iniciado sesión con tus Credenciales Predeterminadas de la Aplicación (ADC). Esto es crucial para que el agente y las herramientas interactúen con los servicios de Google Cloud.
+Asegúrate de haber iniciado sesión con tus Credenciales Predeterminadas de la Aplicación (ADC). Esto es crucial para que el agente y las herramientas interactúen con los servicios de Google Cloud.
     ```bash
     gcloud auth application-default login
     ```
@@ -51,7 +51,7 @@ Asegúrate de tener instalado:
 ### Configuración de Google Cloud
 
 1.  **Habilitar servicios de Google Cloud**:
-    Asegúrate de que los siguientes servicios estén habilitados en tu proyecto de Google Cloud (`YOUR_PROJECT_ID`):
+Asegúrate de que los siguientes servicios estén habilitados en tu proyecto de Google Cloud (`YOUR_PROJECT_ID`):
     ```bash
     gcloud services enable cloudresourcemanager.googleapis.com \
                            servicenetworking.googleapis.com \
@@ -64,8 +64,8 @@ Asegúrate de tener instalado:
     ```
 
 2.  **Configurar permisos de BigQuery**:
-    Si al ejecutar el agente obtienes un error de `Access Denied` relacionado con `bigquery.jobs.create`, significa que la cuenta de servicio `toolbox-identity` no tiene los permisos necesarios para interactuar con BigQuery.
-    **Solución:** Otorga el rol `roles/bigquery.jobUser` a la cuenta de servicio `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com` en tu proyecto.
+Si al ejecutar el agente obtienes un error de `Access Denied` relacionado con `bigquery.jobs.create`, significa que la cuenta de servicio `toolbox-identity` no tiene los permisos necesarios para interactuar con BigQuery.
+**Solución:** Otorga el rol `roles/bigquery.jobUser` a la cuenta de servicio `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com` en tu proyecto.
     ```bash
     gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
         --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
@@ -90,12 +90,12 @@ El agente utiliza un servidor de herramientas (MCP Toolbox) para interactuar con
     ```
 
 2.  **Configurar `tools.yaml`**:
-    El archivo `mcp_toolbox/tools.yaml` define las herramientas disponibles para el servidor MCP. Asegúrate de que la configuración de las herramientas y los `toolsets` sea correcta.
+El archivo `mcp_toolbox/tools.yaml` define las herramientas disponibles para el servidor MCP. Asegúrate de que la configuración de las herramientas y los `toolsets` sea correcta.
     *   La consulta inicial para `search_release_notes_bq` fue cambiada a una consulta de `daily_visits` de Google Analytics.
     *   El nombre de la herramienta y su descripción fueron actualizados para reflejar este cambio (`get_daily_visits`).
 
 3.  **Actualizar el secreto `tools` en Secret Manager**:
-    Si has modificado `mcp_toolbox/tools.yaml` y el servidor MCP está desplegado en Cloud Run, necesitas actualizar el secreto en Secret Manager para que los cambios surtan efecto.
+Si has modificado `mcp_toolbox/tools.yaml` y el servidor MCP está desplegado en Cloud Run, necesitas actualizar el secreto en Secret Manager para que los cambios surtan efecto.
     ```bash
     gcloud secrets versions add tools --data-file="mcp_toolbox/tools.yaml"
     ```
@@ -126,4 +126,4 @@ Para una mejor organización y mantenibilidad, el código del agente ha sido ref
 
 ### Error 404 (Toolset no encontrado)
 
-**Problema:** Si el agente falla con un `RuntimeError` indicando `toolset
+**Problema:** Si el agente falla con un `RuntimeError` indicando `toolset 

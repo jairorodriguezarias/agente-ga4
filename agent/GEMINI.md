@@ -35,7 +35,7 @@ agente_ga4/
 
 2.  **Instalar dependencias**:
     ```bash
-    pip install google-adk
+    pip install -r requirements.txt
     ```
 
 3.  **Autenticación**:
@@ -53,10 +53,15 @@ agente_ga4/
 
 Para poder utilizar las herramientas de este agente, es necesario descargar el ejecutable `toolbox`:
 
+**Nota:** El siguiente comando es para sistemas `darwin` (macOS). Si usas un sistema operativo diferente, por favor, ajusta la URL de descarga a tu arquitectura.
+
 ```bash
 cd agent/mcp_toolbox
 export VERSION=0.7.0
-curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
+# Para sistemas darwin (macOS)
+curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox
+# Para sistemas linux
+# curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
 chmod +x toolbox
 ```
 
@@ -67,3 +72,21 @@ chmod +x toolbox
 - **Autenticación**: Se utilizan las Credenciales Predeterminadas de la Aplicación (ADC) a través de `gcloud auth application-default login`. No es necesario utilizar un archivo `.env` para las credenciales.
 - **Dependencias**: La principal dependencia es `google-adk`, que se instala con `pip install google-adk`.
 - **Ejecución**: El agente se ejecuta con el comando `adk web --agent_path=agente_ga4/agent.py`.
+
+## Configuración Adicional
+
+### Arreglo para error de Certificado SSL en macOS
+
+Al intentar cargar herramientas de `toolbox` de forma remota, puede surgir un error de `CERTIFICATE_VERIFY_FAILED`.
+
+Para solucionarlo de forma permanente dentro del entorno virtual, el script `venv/bin/activate` ha sido modificado para exportar la variable de entorno `SSL_CERT_FILE` apuntando a los certificados del paquete `certifi`. Esta solución se activa automáticamente al usar `source venv/bin/activate`.
+
+### Permisos de BigQuery
+
+Para que el agente pueda interactuar con BigQuery, la cuenta de servicio `toolbox-identity` necesita el rol `roles/bigquery.jobUser`. Este rol se otorga con el siguiente comando:
+
+```bash
+gcloud projects add-iam-policy-binding agentemarketing \
+    --member serviceAccount:toolbox-identity@agentemarketing.iam.gserviceaccount.com \
+    --role roles/bigquery.jobUser
+```

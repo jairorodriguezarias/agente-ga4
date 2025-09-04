@@ -1,21 +1,19 @@
 sources:
-  - name: ga_daily_visits
-    bigquery:
-      query: |
-        SELECT
-            fullVisitorId,
-            visitId,
-            visitStartTime,
-            date,
-            totals,
-            trafficSource,
-            device,
-            geoNetwork
-        FROM
-            `bigquery-public-data.google_analytics_sample.ga_sessions_*`
-        WHERE
-            _TABLE_SUFFIX = @date
-      project: agentemarketing
-      params:
-        - name: date
-          type: string
+ my-bq-source:
+   kind: bigquery
+   project: agentemarketing
+
+tools:
+ get_daily_visits:
+   kind: bigquery-sql
+   source: my-bq-source
+   statement: |
+    SELECT *
+    FROM `bigquery-public-data.google_analytics_sample.daily_visits`
+    LIMIT 5
+   description: |
+    Use this tool to get information on daily website visits from Google Analytics.
+
+toolsets:
+ my_bq_toolset:
+   - get_daily_visits

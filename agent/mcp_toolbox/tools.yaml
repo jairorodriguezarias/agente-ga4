@@ -1,0 +1,21 @@
+sources:
+  - name: ga_daily_visits
+    bigquery:
+      query: |
+        SELECT
+            fullVisitorId,
+            visitId,
+            visitStartTime,
+            date,
+            totals,
+            trafficSource,
+            device,
+            geoNetwork
+        FROM
+            `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+        WHERE
+            _TABLE_SUFFIX = @date
+      project: agentemarketing
+      params:
+        - name: date
+          type: string

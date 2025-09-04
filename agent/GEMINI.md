@@ -49,6 +49,17 @@ agente_ga4/
     adk web --agent_path=agente_ga4/agent.py
     ```
 
+## Toolbox Setup
+
+Para poder utilizar las herramientas de este agente, es necesario descargar el ejecutable `toolbox`:
+
+```bash
+cd agent/mcp_toolbox
+export VERSION=0.7.0
+curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
+chmod +x toolbox
+```
+
 ## Información Importante
 
 - **ID del Proyecto de Google Cloud**: `agentemarketing`

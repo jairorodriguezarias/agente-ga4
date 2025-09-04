@@ -77,8 +77,8 @@ Si al ejecutar el agente obtienes un error de `Access Denied` relacionado con `b
 Otorga el rol `roles/bigquery.jobUser` a la cuenta de servicio `toolbox-identity` en tu proyecto. Puedes hacerlo con el siguiente comando:
 
 ```bash
-gcloud projects add-iam-policy-binding agentemarketing \
-    --member serviceAccount:toolbox-identity@agentemarketing.iam.gserviceaccount.com \
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
 ```
 

@@ -4,7 +4,7 @@
 set -e
 
 # Set the project ID from the argument or use the default
-PROJECT_ID="${1:-agentemarketing}"
+PROJECT_ID="${1:-YOUR_PROJECT_ID}"
 
 echo "Configuring Google Cloud project: $PROJECT_ID"
 

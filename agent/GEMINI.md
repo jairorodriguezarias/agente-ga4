@@ -67,8 +67,8 @@ chmod +x toolbox
 
 ## Información Importante
 
-- **ID del Proyecto de Google Cloud**: `agentemarketing`
-- **Usuario Administrador**: `admin@jairorodriguez.altostrat.com`
+- **ID del Proyecto de Google Cloud**: `YOUR_PROJECT_ID`
+- **Usuario Administrador**: `YOUR_ADMIN_USER_EMAIL`
 - **Autenticación**: Se utilizan las Credenciales Predeterminadas de la Aplicación (ADC) a través de `gcloud auth application-default login`. No es necesario utilizar un archivo `.env` para las credenciales.
 - **Dependencias**: La principal dependencia es `google-adk`, que se instala con `pip install google-adk`.
 - **Ejecución**: El agente se ejecuta con el comando `adk web --agent_path=agente_ga4/agent.py`.
@@ -86,7 +86,7 @@ Para solucionarlo de forma permanente dentro del entorno virtual, el script `ven
 Para que el agente pueda interactuar con BigQuery, la cuenta de servicio `toolbox-identity` necesita el rol `roles/bigquery.jobUser`. Este rol se otorga con el siguiente comando:
 
 ```bash
-gcloud projects add-iam-policy-binding agentemarketing \
-    --member serviceAccount:toolbox-identity@agentemarketing.iam.gserviceaccount.com \
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
 ```

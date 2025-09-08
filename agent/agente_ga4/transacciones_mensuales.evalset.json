@@ -1,0 +1,253 @@
+{
+  "eval_set_id": "transacciones_mensuales",
+  "name": "transacciones_mensuales",
+  "description": null,
+  "eval_cases": [
+    {
+      "eval_id": "transacciones20701",
+      "conversation": [
+        {
+          "invocation_id": "e-7d305865-1041-460f-ba6b-c41a0cd36e21",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "DAme los datos menusales de transacciones "
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": "CqgKAR_Mhbbg4ZwwINHmuH27mzbUX3H-o3mCmfCUPr3B0P-UP7UPaRvL--n-vMRHvrwG7_AoRx5JUwWHwnHG76KjSc2b6PwezcjY5LtQbhbXoycI5B0D3QdYM-9hYuR1NTLjwefNgUxodupjTGR5CsRPSctpbw2z8zc4pCGV57Mcwx66kEojfAs8357q9w7kb15KJYdIFSKJkjeTr3TKLsK_H9WCOjNl7mbIIXkrQHIO32_TQgOvlZfhpPVnksYV9MemPxr_VvQlHodHLaJlD5vw9vK2CobSSMSENzJvmBkaxMBud3mbbOG4SA4zYGdbrQKyjN368N7qDNAkpdlp4lRbvEkvvnATnc15jJQILlA8tzy7wSi0Vh6_jpEo37mYMfOGK5Gl9jPGHWwa4EBknHD4T-eCnjw1M96q_rBskeNW6UhGHxVF4_sN66fOfRE11LCcJC4HVMW5epUSiT6-NtvqHaOa8TjRYnH88YPXST5Q0e7TEZIgh_43qanGGNKfiKuG9yiNwfV_hPSZ0oBwRnHGr4ECCyfj2xr0bp1Z4dx6byzyyXGvebi8NIPV_BNrnqXa7_qiCvQT6CkbYp6dMNvuInhUAWZl04FamiQj5C4WAPtK7OJPKOZF-yrppIhtMD6M0p27blDgF_LjDdaYUrcsmoZ35bwCY0QFoJ8neJjZ2FQNemrFeMy6GY0FuX7BVQhGbcHl5r60HQmB6J9A-gCdTxynG3uieyH8V3lLLOfXjzg_qRw5Hh4i6oXHj4d00c2xlbhrUhSGfgRFFPea2YBOaDtcNII62valvA3ssegKqnRnp-io_Lstwy9WlfP21jrtATmSg8kHs5A1OegojLNsd72OyOWFZHcG3lJF2VjhWjhZX-j9QhHgPC8_D99HRTHIzbRvTuJfkP41YcY5D3x-0R0EPZ5f0lZmvZb3Zb7Ljobmq71iEu8iQSozNBxbhutjdZRkv8FVjuRpzrXJc-4a1K3OrZ1gYRzwpfGH9dQz_U1zPbOYG9ODwGyyLf5TursqrC3sgBWXtuecBo_ovV18up-XEuOUE1k_XCC0kYwHrMrtSGfBOtsncd4gubBssjGutWABoa7fO3Ni178rVUREItz9rx56UPWu7hjnck5-2sXKy7PkXk9BtqyoyJNqFr9ajSFCaZb8yr3M02BEibiT0KTKLfRyML6xYTKL-CEyjzliKQbgaFYFzYqAUp22ecPxMwrvuO1E-syZBLDAYn75qqYOD7uJirWd9g-Wc855fD-FU3HzgO2PnTOi9kzDkzYRDN_YfTVw7K4JvKDA3T7MuBbUZXzWQTV0VqDYa-ZHgrre06QWW3dC76gDTrtmWTaEK7u_59rFbtR-N0mh407iF7tQcKebi98r0FvQiXB9viqUVUoCAe2jVk8EMJqwnXTrWLA5vO30k_rBsrSgIKGrl5f4OdDiY5LSGeFrgb9QClHsuU7zNA1GaDOEKpZpah-HD3AOgWR3WHRieN5LRTIhOv9Rt2KXoZFfYSDyv8p-Db65ImtL5mANs57H-Y5ff30qmRdWfzwhaZgKNO2U0FK0hj1eK14SToWyaBsDUqk6ZbcJ--gdPuzqpWpkkPIl8QpvI9Av-IsUueUxdh4P9xsWmRjrPQYcbXauc-6fsI0QjhtObwVCUfUS7IEgrD47bJY2Jo_wZAV2_yGBBv_mNqCpQgOz1MNT-DjjNAp7JxkE2gqlmmkYxgk1NkofuZqILF5WRQgJDg6F1yvtNXooz4Ak2UOUlFpJc28O",
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Necesito que me especifiques el mes y el año para poder darte los datos mensuales de transacciones. Por ejemplo: \"2023-01\" para enero de 2023."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757350845.045277
+        },
+        {
+          "invocation_id": "e-288c9189-5f12-4955-8136-e0672edf2d2e",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "year 2015"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": "CukBAR_MhbYTVVoMSN_xhrWh-G1p2zTbBI_nj2E9FU7N05CcnJekyAAZrNynaJvgFllQiR0cRuluAhijhwQba3NxbO6sJliFFVL6lsKl1IjpEG6zoi1Jnf2tlFHJuvFptF03pYZw7TB69W-9BDBR4-w6ORxqt3WNkMQWWbrgk9zNuUZnhq4oAxlX4Yhr3AiNVLopKkk7cDbjoPwdGpoftQm4ZyaI2DFiAiuNsWUQHwu_tDbBZpHUx65C5j8KppyBX2aWs1dgCiIP60oaPG7MK9wrVl0Brv88IEAHkXv3Y5KOgO5dtY4wWvDzXEQ=",
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Necesito el mes específico de 2015 para poder darte los datos de transacciones. Por favor, indícame el mes (por ejemplo, \"2015-01\" para enero de 2015)."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757350855.824445
+        },
+        {
+          "invocation_id": "e-13d67e04-d2e0-4be2-9140-a57d5f57f227",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "mes 04"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "No tengo acceso a esa información."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "adk-5372b3eb-aa8a-4699-9883-f82e18653a63",
+                "args": {
+                  "YEAR_MONTH": "201504"
+                },
+                "name": "get_monthly_transactions_by_browser"
+              }
+            ],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757350860.994181
+        },
+        {
+          "invocation_id": "e-4360f803-23d5-4747-8080-e67eb24ddf4a",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "mes 01"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "No tengo acceso a esa información."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "adk-55a4584c-1516-4e55-8174-f5cd97c360de",
+                "args": {
+                  "YEAR_MONTH": "201501"
+                },
+                "name": "get_monthly_transactions_by_browser"
+              }
+            ],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757350872.357469
+        },
+        {
+          "invocation_id": "e-f3ce714c-b1c1-4c9d-8d0c-55cbdd4b3144",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "201701"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "En Enero de 2017, las transacciones mensuales por navegador fueron las siguientes:\n* Chrome: 629\n* Safari: 56\n* Firefox: 11\n* Internet Explorer: 9\n* Edge: 3\n* Safari (in-app): 3\n* Opera: 1\n* Android Webview: 1"
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "adk-ed2bf2ec-308e-478c-977a-cde229d4f109",
+                "args": {
+                  "YEAR_MONTH": "201701"
+                },
+                "name": "get_monthly_transactions_by_browser"
+              }
+            ],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757350889.598831
+        }
+      ],
+      "session_input": {
+        "app_name": "agente_ga4",
+        "user_id": "user",
+        "state": {}
+      },
+      "creation_timestamp": 1757350932.873442
+    }
+  ],
+  "creation_timestamp": 1757350919.838915
+}

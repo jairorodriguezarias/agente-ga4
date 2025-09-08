@@ -1,6 +1,6 @@
 # Proyecto de Agente con ADK
 
-Este archivo describe la estructura y el uso de este proyecto de agente de ADK.
+Este archivo describe la estructura y el uso de este proyecto de agente de ADK, con información específica para el modelo Gemini.
 
 ## Estructura del Proyecto
 
@@ -11,22 +11,25 @@ agente_ga4/
 ├── venv/
 ├── agente_ga4/
 │   ├── __init__.py
-│   └── agent.py
+│   ├── agent.py
+│   ├── config.py
+│   ├── prompts.py
+│   └── requirements.txt
 ├── .env
+├── .env.example
+├── .gitignore
 ├── README.md
-└── GEMINI.md
+├── GEMINI.md
+├── requirements.txt (moved to agente_ga4/requirements.txt)
+├── setup_gcloud.sh
+└── mcp_toolbox/
+    ├── toolbox
+    └── tools.yaml
 ```
 
-- **agente_ga4/**: El directorio raíz de su proyecto.
-- **venv/**: El entorno virtual de Python.
-- **agente_ga4/**: Un paquete de Python para su agente.
-- **__init__.py**: Hace que el directorio `agente_ga4` sea un paquete de Python.
-- **agent.py**: Este es el archivo principal donde se define la lógica de su agente.
-- **.env**: Archivo para variables de entorno (no se usa para credenciales en este proyecto).
-- **README.md**: Archivo de descripción del proyecto.
-- **GEMINI.md**: Archivo con información para Gemini.
+## Cómo Empezar (para Gemini)
 
-## Cómo Empezar
+Para ejecutar el agente o realizar tareas de desarrollo:
 
 1.  **Activar el entorno virtual**:
     ```bash
@@ -35,7 +38,7 @@ agente_ga4/
 
 2.  **Instalar dependencias**:
     ```bash
-    pip install -r requirements.txt
+    pip install -r agente_ga4/requirements.txt
     ```
 
 3.  **Autenticación**:
@@ -44,49 +47,85 @@ agente_ga4/
     gcloud auth application-default login
     ```
 
-4.  **Ejecutar el agente**:
+4.  **Ejecutar el agente (localmente)**:
     ```bash
     adk web --agent_path=agente_ga4/agent.py
     ```
 
-## Toolbox Setup
+## Toolbox Setup (para Gemini)
 
-Para poder utilizar las herramientas de este agente, es necesario descargar el ejecutable `toolbox`:
+Para poder utilizar las herramientas de este agente, es necesario descargar el ejecutable `toolbox` y configurar el servidor MCP:
 
-**Nota:** El siguiente comando es para sistemas `darwin` (macOS). Si usas un sistema operativo diferente, por favor, ajusta la URL de descarga a tu arquitectura.
+1.  **Descargar el ejecutable `toolbox`**:
+    ```bash
+    cd mcp_toolbox
+    export VERSION=0.7.0
+    curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox # Para macOS
+    # curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox # Para Linux
+    chmod +x toolbox
+    cd ..
+    ```
 
-```bash
-cd agent/mcp_toolbox
-export VERSION=0.7.0
-# Para sistemas darwin (macOS)
-curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox
-# Para sistemas linux
-# curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
-chmod +x toolbox
-```
+2.  **Configurar el secreto `tools` en Secret Manager**:
+    ```bash
+    gcloud secrets create tools --data-file=mcp_toolbox/tools.yaml # Solo la primera vez
+    gcloud secrets versions add tools --data-file=mcp_toolbox/tools.yaml # Para actualizar
+    ```
 
-## Información Importante
+3.  **Desplegar el servidor MCP en Cloud Run**:
+    ```bash
+    export IMAGE=us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest
+    gcloud run deploy toolbox \
+        --image $IMAGE \
+        --service-account toolbox-identity \
+        --region us-central1 \
+        --set-secrets "/app/tools.yaml=tools:latest" \
+        --args="--tools-file=/app/tools.yaml","--address=0.0.0.0","--port=8080" \
+        --allow-unauthenticated \
+        --timeout=600
+    ```
 
-- **ID del Proyecto de Google Cloud**: `YOUR_PROJECT_ID`
-- **Usuario Administrador**: `YOUR_ADMIN_USER_EMAIL`
-- **Autenticación**: Se utilizan las Credenciales Predeterminadas de la Aplicación (ADC) a través de `gcloud auth application-default login`. No es necesario utilizar un archivo `.env` para las credenciales.
-- **Dependencias**: La principal dependencia es `google-adk`, que se instala con `pip install google-adk`.
-- **Ejecución**: El agente se ejecuta con el comando `adk web --agent_path=agente_ga4/agent.py`.
+## Información Importante (para Gemini)
 
-## Configuración Adicional
+-   **ID del Proyecto de Google Cloud**: `YOUR_PROJECT_ID`
+-   **Usuario Administrador**: `YOUR_ADMIN_USER_EMAIL`
+-   **Autenticación**: Se utilizan las Credenciales Predeterminadas de la Aplicación (ADC) a través de `gcloud auth application-default login`. No es necesario utilizar un archivo `.env` para las credenciales.
+-   **Dependencias**: La principal dependencia es `google-adk`, que se instala con `pip install -r requirements.txt`.
+
+## Configuración Adicional (para Gemini)
 
 ### Arreglo para error de Certificado SSL en macOS
 
-Al intentar cargar herramientas de `toolbox` de forma remota, puede surgir un error de `CERTIFICATE_VERIFY_FAILED`.
+**Problema:** `aiohttp.client_exceptions.ClientConnectorCertificateError` con `[SSL: CERTIFICATE_VERIFY_FAILED]`.
 
-Para solucionarlo de forma permanente dentro del entorno virtual, el script `venv/bin/activate` ha sido modificado para exportar la variable de entorno `SSL_CERT_FILE` apuntando a los certificados del paquete `certifi`. Esta solución se activa automáticamente al usar `source venv/bin/activate`.
+**Solución:** El script `venv/bin/activate` ha sido modificado para exportar `SSL_CERT_FILE` apuntando a los certificados de `certifi`. Se activa automáticamente con `source venv/bin/activate`.
 
 ### Permisos de BigQuery
 
-Para que el agente pueda interactuar con BigQuery, la cuenta de servicio `toolbox-identity` necesita el rol `roles/bigquery.jobUser`. Este rol se otorga con el siguiente comando:
+**Problema:** `Error 403: Access Denied` relacionado con `bigquery.jobs.create`.
 
+**Solución:** Otorgar el rol `roles/bigquery.jobUser` a la cuenta de servicio `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
 ```bash
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
     --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
 ```
+
+## Despliegue en Agent Engine (para Gemini)
+
+Para desplegar el agente en Google Cloud Agent Engine:
+
+1.  **Asegúrate de que el bucket de GCS exista:**
+    ```bash
+    gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
+    ```
+
+2.  **Despliega el agente en Agent Engine:**
+    ```bash
+    adk deploy agent_engine \
+        --project=YOUR_PROJECT_ID \
+        --region=us-central1 \
+        --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket \
+        --display_name="Agente_Marketing"
+        agente_ga4/
+    ```

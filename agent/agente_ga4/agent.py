@@ -1,13 +1,13 @@
 import logging
 from google.adk.agents import Agent
 from toolbox_core import ToolboxSyncClient
-from agente_ga4.prompts import SYSTEM_PROMPT
-from agente_ga4.config import AGENT_CONFIG
+from .prompts import SYSTEM_PROMPT
+from .config import AGENT_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
- 
+
 
 # Define the remote tool for the MCP server
 # This assumes the MCP server is running on localhost:8080

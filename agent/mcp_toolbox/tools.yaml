@@ -1,19 +1,84 @@
 sources:
- my-bq-source:
-   kind: bigquery
-   project: agentemarketing
+  my-bq-source:
+    kind: bigquery
+    project: agentemarketing
 
 tools:
- get_daily_visits:
-   kind: bigquery-sql
-   source: my-bq-source
-   statement: |
-    SELECT *
-    FROM `bigquery-public-data.google_analytics_sample.daily_visits`
-    LIMIT 5
-   description: |
-    Use this tool to get information on daily website visits from Google Analytics.
+  get_daily_visits:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+      SELECT *
+      FROM `bigquery-public-data.google_analytics_sample.daily_visits`
+      LIMIT 5
+    description: |
+      Use this tool to get information on daily website visits from Google Analytics.
+
+  get_daily_transactions_by_browser:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+      SELECT
+        device.browser,
+        SUM ( totals.transactions ) AS total_transactions
+      FROM
+        `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+      WHERE
+        _TABLE_SUFFIX = @TABLE_SUFFIX
+      GROUP BY
+        device.browser
+      ORDER BY
+        total_transactions DESC
+    description: |
+      Use this tool to get transactions by browser for a specific day
+    parameters:
+      - name: TABLE_SUFFIX
+        type: string
+        description: The filter YYYYMMDD.
+
+  get_monthly_visits:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+      SELECT
+        COUNT(DISTINCT CONCAT(fullVisitorId, CAST(visitId AS STRING))) AS monthly_visits
+      FROM
+        `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+      WHERE
+        _TABLE_SUFFIX LIKE CONCAT(@YEAR_MONTH, '%')
+    description: |
+      Use this tool to get the total number of visits for a specific month.
+    parameters:
+      - name: YEAR_MONTH
+        type: string
+        description: The month to filter by, in YYYYMM format (e.g., '201707').
+
+  get_monthly_transactions_by_browser:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+      SELECT
+        device.browser,
+        SUM(totals.transactions) AS monthly_total_transactions
+      FROM
+        `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+      WHERE
+        _TABLE_SUFFIX LIKE CONCAT(@YEAR_MONTH, '%')
+        AND totals.transactions IS NOT NULL
+      GROUP BY
+        device.browser
+      ORDER BY
+        monthly_total_transactions DESC
+    description: |
+      Use this tool to get the total transactions by browser for a specific month.
+    parameters:
+      - name: YEAR_MONTH
+        type: string
+        description: The month to filter by, in YYYYMM format (e.g., '201707').
 
 toolsets:
- my_bq_toolset:
-   - get_daily_visits
+  my_bq_toolset:
+    - get_daily_visits
+    - get_daily_transactions_by_browser
+    - get_monthly_visits
+    - get_monthly_transactions_by_browser

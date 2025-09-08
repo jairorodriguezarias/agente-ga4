@@ -1,0 +1,5 @@
+google-adk
+google-cloud-aiplatform[agent_engines]
+cloudpickle
+mcp
+PyYAML

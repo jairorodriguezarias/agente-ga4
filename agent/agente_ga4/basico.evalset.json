@@ -1,0 +1,173 @@
+{
+  "eval_set_id": "basico",
+  "name": "basico",
+  "description": null,
+  "eval_cases": [
+    {
+      "eval_id": "Puedes consultar datos de GA4?",
+      "conversation": [
+        {
+          "invocation_id": "e-b29f4572-dea8-4d8b-9e28-ada220e52810",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Puedes consultar datos de GA4?"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": "CoMDAcu98PCd-ys4jO2U-iQSFw3K5NniNF5X1RqMjrP1K5PrkETMaBH_iHjmHTrJuPTkn6lU1Mpb2kAkiCfrWj7syMSwuvI7jlGs-mpZI0rpUuUsx8o7mR_UIbweSiDzcP0iE6kz5iUK5L1EMT3aU3A2o7iIYrUQY5lJFJheJ2RenEaDdVokWgMS2ystemxu7JbmTqEY7HsZmApPHjQGt_uPKFlM1He31Cyj5NHj_2YzykobhP4oLH8VlbXPaEmrui8iO32RGG7p3Wi6Q7YX3pebwKB7ANbTo_1AMZtj-TezFt1W1lhbQ-i5iB_l114pnDbsXGibsw0nVWe7YOVzgnXALWi_mBzEcrt_9pKCDvEQOygE8F2sUB51rj8j1hXh6I7BdMn5qyZGWsy1ACRBs3ZN4owgFO2_w8wDm04NhCM44KHp4dllx3XlKKCK1Z-wXQXKbmtjxHiBP5Je2aCZxZcAwS74j6VWkhXWAVdqq2-1xcaXguMqyfkeQvxeTLJWEPZmffq_",
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Sí, puedo consultar datos de Google Analytics 4 (GA4)."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757005526.601969
+        }
+      ],
+      "session_input": {
+        "app_name": "agente_ga4",
+        "user_id": "user",
+        "state": {}
+      },
+      "creation_timestamp": 1757005560.7920241
+    },
+    {
+      "eval_id": "Que sabes de GA4?",
+      "conversation": [
+        {
+          "invocation_id": "e-a7608442-658f-4b70-a688-218b4feafc37",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Que sabes de GA4?"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": "CoIDAcu98PDWW83LeEPHT63bQZOgMzhh7zcfwImi-uql56tozYSZDkxAqawagWfnrbD3GZ0klI_y9PZuBj9bmri2UW2WGkF_DNVw0ZTSGFolKr3spptDW6xKdP16oOILcIfcdYl-CmxjMQyuPr8jhA7z1ogH9bHnrBIVLEm3UcBtogMmniCRIfk-UBiuluR006IHX26tmSlTBrMAnTNx89VgFmZBYUnCYQ1zCciEIjesqfY7-QQfMIK8meUCX9huNbhzsVVD0wEGaLh1FNb7URrpDjoDyDOyU12FpqjScT4RzwuwAfMyaRVPBpf0ld2PESRm1SoMlnA82_8hDEPyeHPkHJAMVaxslOqeTzNqF6nSmtXVVs64b4898oVYbx6DVD-HVW0SU8tQ__U4pPxfmiW_5UhB04Sg1J9Ag9FP-lO_ldeHLUbR3GAZyeJQI5zFCCjE7Fr86crvuQ5HQuCTRCBPtY3zXM89_VTqxrxB8E3Y9WnUk2fEGRXnL5N46oPOfzPO1qA=",
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Soy un analista de marketing especializado en Google Analytics. Solo puedo responder preguntas sobre los datos de Google Analytics a los que tengo acceso a través de mis herramientas."
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757006002.44339
+        }
+      ],
+      "session_input": {
+        "app_name": "agente_ga4",
+        "user_id": "user",
+        "state": {}
+      },
+      "creation_timestamp": 1757006020.1561742
+    },
+    {
+      "eval_id": "Usa la herramienta par saber las visitas diarias y muestralas",
+      "conversation": [
+        {
+          "invocation_id": "e-31c6d866-8a33-4de9-b76b-a1f0b10f4ddb",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Usa la herramienta par saber las visitas diarias y muestralas"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Las visitas diarias son:\n\n*   **2016-08-01**: 1296\n*   **2016-08-02**: 1963\n*   **2016-08-03**: 2703\n*   **2016-08-04**: 3176\n*   **2016-08-05**: 2994"
+              }
+            ],
+            "role": null
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "id": "adk-a7bc0f31-ee9a-48b1-b3fe-2154a70b4829",
+                "args": {},
+                "name": "get_daily_visits"
+              }
+            ],
+            "intermediate_responses": []
+          },
+          "creation_timestamp": 1757006217.407483
+        }
+      ],
+      "session_input": {
+        "app_name": "agente_ga4",
+        "user_id": "user",
+        "state": {}
+      },
+      "creation_timestamp": 1757006233.108858
+    }
+  ],
+  "creation_timestamp": 1757005541.781573
+}

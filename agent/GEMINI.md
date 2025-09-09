@@ -1,10 +1,10 @@
-# Proyecto de Agente con ADK
+# ADK Agent Project
 
-Este archivo describe la estructura y el uso de este proyecto de agente de ADK, con información específica para el modelo Gemini.
+This file describes the structure and usage of this ADK agent project, with specific information for the Gemini model.
 
-## Estructura del Proyecto
+## Project Structure
 
-El proyecto sigue la siguiente estructura:
+The project follows this structure:
 
 ```
 agente_ga4/
@@ -27,52 +27,52 @@ agente_ga4/
     └── tools.yaml
 ```
 
-## Cómo Empezar (para Gemini)
+## Getting Started (for Gemini)
 
-Para ejecutar el agente o realizar tareas de desarrollo:
+To run the agent or perform development tasks:
 
-1.  **Activar el entorno virtual**:
+1.  **Activate the virtual environment**:
     ```bash
-    source v/bin/activate
+    source venv/bin/activate
     ```
 
-2.  **Instalar dependencias**:
+2.  **Install dependencies**:
     ```bash
     pip install -r agente_ga4/requirements.txt
     ```
 
-3.  **Autenticación**:
-    Este proyecto utiliza las Credenciales Predeterminadas de la Aplicación (Application Default Credentials - ADC) para la autenticación con Google Cloud. Asegúrate de haber iniciado sesión con:
+3.  **Authentication**:
+    This project uses Application Default Credentials (ADC) for authentication with Google Cloud. Make sure you are logged in with:
     ```bash
     gcloud auth application-default login
     ```
 
-4.  **Ejecutar el agente (localmente)**:
+4.  **Run the agent (locally)**:
     ```bash
     adk web --agent_path=agente_ga4/agent.py
     ```
 
-## Toolbox Setup (para Gemini)
+## Toolbox Setup (for Gemini)
 
-Para poder utilizar las herramientas de este agente, es necesario descargar el ejecutable `toolbox` y configurar el servidor MCP:
+To use the tools for this agent, you need to download the `toolbox` executable and configure the MCP server:
 
-1.  **Descargar el ejecutable `toolbox`**:
+1.  **Download the `toolbox` executable**:
     ```bash
     cd mcp_toolbox
     export VERSION=0.7.0
-    curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox # Para macOS
-    # curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox # Para Linux
+    curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox # For macOS
+    # curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox # For Linux
     chmod +x toolbox
     cd ..
     ```
 
-2.  **Configurar el secreto `tools` en Secret Manager**:
+2.  **Configure the `tools` secret in Secret Manager**:
     ```bash
-    gcloud secrets create tools --data-file=mcp_toolbox/tools.yaml # Solo la primera vez
-    gcloud secrets versions add tools --data-file=mcp_toolbox/tools.yaml # Para actualizar
+    gcloud secrets create tools --data-file=mcp_toolbox/tools.yaml # First time only
+    gcloud secrets versions add tools --data-file=mcp_toolbox/tools.yaml # To update
     ```
 
-3.  **Desplegar el servidor MCP en Cloud Run**:
+3.  **Deploy the MCP server on Cloud Run**:
     ```bash
     export IMAGE=us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest
     gcloud run deploy toolbox \
@@ -85,42 +85,42 @@ Para poder utilizar las herramientas de este agente, es necesario descargar el e
         --timeout=600
     ```
 
-## Información Importante (para Gemini)
+## Important Information (for Gemini)
 
--   **ID del Proyecto de Google Cloud**: `YOUR_PROJECT_ID`
--   **Usuario Administrador**: `YOUR_ADMIN_USER_EMAIL`
--   **Autenticación**: Se utilizan las Credenciales Predeterminadas de la Aplicación (ADC) a través de `gcloud auth application-default login`. No es necesario utilizar un archivo `.env` para las credenciales.
--   **Dependencias**: La principal dependencia es `google-adk`, que se instala con `pip install -r requirements.txt`.
+-   **Google Cloud Project ID**: `YOUR_PROJECT_ID`
+-   **Admin User**: `YOUR_ADMIN_USER_EMAIL`
+-   **Authentication**: Uses Application Default Credentials (ADC) via `gcloud auth application-default login`. It is not necessary to use a `.env` file for credentials.
+-   **Dependencies**: The main dependency is `google-adk`, installed with `pip install -r requirements.txt`.
 
-## Configuración Adicional (para Gemini)
+## Additional Configuration (for Gemini)
 
-### Arreglo para error de Certificado SSL en macOS
+### Fix for SSL Certificate Error on macOS
 
-**Problema:** `aiohttp.client_exceptions.ClientConnectorCertificateError` con `[SSL: CERTIFICATE_VERIFY_FAILED]`.
+**Problem:** `aiohttp.client_exceptions.ClientConnectorCertificateError` with `[SSL: CERTIFICATE_VERIFY_FAILED]`.
 
-**Solución:** El script `venv/bin/activate` ha sido modificado para exportar `SSL_CERT_FILE` apuntando a los certificados de `certifi`. Se activa automáticamente con `source venv/bin/activate`.
+**Solution:** The `venv/bin/activate` script has been modified to export `SSL_CERT_FILE` pointing to `certifi` certificates. It is activated automatically with `source venv/bin/activate`.
 
-### Permisos de BigQuery
+### BigQuery Permissions
 
-**Problema:** `Error 403: Access Denied` relacionado con `bigquery.jobs.create`.
+**Problem:** `Error 403: Access Denied` related to `bigquery.jobs.create`.
 
-**Solución:** Otorgar el rol `roles/bigquery.jobUser` a la cuenta de servicio `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com`.
+**Solution:** Grant the `roles/bigquery.jobUser` role to the `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com` service account.
 ```bash
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
     --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
 ```
 
-## Despliegue en Agent Engine (para Gemini)
+## Deployment on Agent Engine (for Gemini)
 
-Para desplegar el agente en Google Cloud Agent Engine:
+To deploy the agent to Google Cloud Agent Engine:
 
-1.  **Asegúrate de que el bucket de GCS exista:**
+1.  **Ensure the GCS bucket exists**:
     ```bash
     gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
     ```
 
-2.  **Despliega el agente en Agent Engine:**
+2.  **Deploy the agent to Agent Engine**:
     ```bash
     adk deploy agent_engine \
         --project=YOUR_PROJECT_ID \
@@ -129,24 +129,24 @@ Para desplegar el agente en Google Cloud Agent Engine:
         --display_name="Agente_Marketing"
     ```
 
-## Publicar Agentes de ADK en Agentspace
+## Publishing ADK Agents to Agentspace
 
-Esta sección se basa en el documento "Publishing agents built on ADK to Agentspace".
+This section is based on the document "Publishing agents built on ADK to Agentspace".
 
-### Prerrequisitos
+### Prerequisites
 
--   **Proyecto en Allowlist**: Tu proyecto de Google Cloud debe estar en la lista de permitidos de Agentspace.
--   **Registro Cross-Project**: Si el agente (desplegado en Proyecto A) y Agentspace (en Proyecto B) están en proyectos distintos, se necesita un proceso de *allowlisting* adicional.
--   **Permisos de Cuenta de Servicio**: La cuenta de servicio `service-PROJECTNUMBER@gcp-sa-discoveryengine.iam.gserviceaccount.com` necesita los siguientes roles:
+-   **Project on Allowlist**: Your Google Cloud project must be on the Agentspace allowlist.
+-   **Cross-Project Registration**: If the agent (deployed in Project A) and Agentspace (in Project B) are in different projects, an additional *allowlisting* process is needed.
+-   **Service Account Permissions**: The `service-PROJECTNUMBER@gcp-sa-discoveryengine.iam.gserviceaccount.com` service account needs the following roles:
     -   `Discovery Engine Service Agent`
     -   `Editor`
     -   `Vertex AI User`
     -   `Vertex AI Viewer`
-    *(Nota: Para encontrar esta cuenta de servicio en IAM, asegúrate de marcar la casilla "Incluir concesiones de roles proporcionadas por Google")*.
+    *(Note: To find this service account in IAM, make sure to check the "Include Google-provided role grants" box)*.
 
-### 1. Despliegue en Agent Engine
+### 1. Deploy to Agent Engine
 
-Asegúrate de que tu `requirements.txt` contiene `google-cloud-aiplatform[agent_engines,adk]`.
+Make sure your `requirements.txt` contains `google-cloud-aiplatform[agent_engines,adk]`.
 
 ```bash
 adk deploy agent_engine \
@@ -156,61 +156,61 @@ adk deploy agent_engine \
     --display_name="YOUR_AGENT_NAME"
 ```
 
-#### Notas importantes sobre el despliegue:
+#### Important notes on deployment:
 
--   El comando `adk deploy` crea un agente **nuevo** cada vez. Actualmente no hay funcionalidad para actualizar uno existente (es una feature request pendiente).
--   Para **eliminar un agente**, se puede usar la UI de Agent Engine en la consola de Cloud o la [herramienta de registro de agentes](https://github.com/VeerMuchandi/agent_registration_tool).
--   Actualmente no se pueden ver los **logs de despliegue** en tiempo real (también es una feature request pendiente).
--   Es crucial **anotar el `reasoning-engine id`** que se muestra al final del despliegue para poder registrar el agente en Agentspace.
+-   The `adk deploy` command creates a **new** agent each time. There is currently no functionality to update an existing one (it is a pending feature request).
+-   To **delete an agent**, you can use the Agent Engine UI in the Cloud Console or the [agent registration tool](https://github.com/VeerMuchandi/agent_registration_tool).
+-   Currently, you cannot view **deployment logs** in real-time (also a pending feature request).
+-   It is crucial to **note the `reasoning-engine id`** displayed at the end of the deployment to register the agent.
 
-### 2. Probar el Agente Desplegado
+### 2. Test the Deployed Agent
 
-Puedes usar un script de Python para verificar que el agente funciona en Agent Engine.
+You can use a Python script to verify that the agent works on Agent Engine.
 
 ```python
 import vertexai
 from vertexai.preview import reasoning_engines
 
-# Configuración inicial
+# Initial Configuration
 PROJECT_ID = "YOUR_PROJECT_ID"
 LOCATION = "us-central1"
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
-# Buscar el Reasoning Engine
+# Find the Reasoning Engine
 engines = reasoning_engines.ReasoningEngine.list(
     filter='display_name="YOUR_AGENT_NAME"'
 )
 
 if not engines:
-    print(f"No se encontró el Reasoning Engine con el nombre: YOUR_AGENT_NAME")
+    print(f"Reasoning Engine with name YOUR_AGENT_NAME not found")
 else:
     engine = engines[0]
-    print(f"Reasoning Engine encontrado: {engine.resource_name}")
+    print(f"Reasoning Engine found: {engine.resource_name}")
 
-    # Crear una sesión
+    # Create a session
     session = engine.create_session()
-    print(f"Sesión creada: {session.name}")
+    print(f"Session created: {session.name}")
 
-    # Ejecutar el agente
+    # Run the agent
     output = engine.agent_run(
         session_id=session.name.split('/')[-1],
-        message="Escribe tu prompt aquí"
+        message="Type your prompt here"
     )
-    print(f"Respuesta del agente: {output}")
+    print(f"Agent response: {output}")
 ```
 
-### 3. Registrar en Agentspace (Método Alternativo)
+### 3. Register in Agentspace (Alternative Method)
 
-Existe una herramienta CLI para simplificar el registro y la gestión de agentes.
+There is a CLI tool to simplify agent registration and management.
 
--   **Repositorio**: [https://github.com/VeerMuchandi/agent_registration_tool](https://github.com/VeerMuchandi/agent_registration_tool)
--   **Uso**:
+-   **Repository**: [https://github.com/VeerMuchandi/agent_registration_tool](https://github.com/VeerMuchandi/agent_registration_tool)
+-   **Usage**:
     ```bash
     python as_registry_client.py --config config.txt
     ```
-    La herramienta permite acciones como `register_agent`, `update_agent`, `list_registry`, etc.
+    The tool allows actions like `register_agent`, `update_agent`, `list_registry`, etc.
 
-### Problemas Conocidos
+### Known Issues
 
--   **Error de `Malformed Function Call`** (ID de bug: `b/409316706`): Puede ocurrir en transacciones largas y causa que el agente no se ejecute completamente.
--   **Formato de Salida**: A veces, el formato de la salida del agente puede ser aleatorio y mostrar markdown o HTML crudo.
+-   **`Malformed Function Call` Error** (Bug ID: `b/409316706`): Can occur in long-running transactions and causes the agent to not execute completely.
+-   **Output Formatting**: Sometimes, the agent's output format can be random and display raw markdown or HTML.

@@ -5,24 +5,13 @@ Este proyecto es un agente creado con el Kit de Desarrollo de Agentes (ADK) de G
 ## Tabla de Contenidos
 - [Setup Inicial](#setup-inicial)
   - [Requisitos Previos](#requisitos-previos)
-  - [Configuración del Entorno Local](#configuración-del-entorno-local)
-  - [Configuración de Google Cloud](#configuración-de-google-cloud)
-  - [Configuración del Servidor MCP (Toolbox)](#configuración-del-servidor-mcp-toolbox)
+  - [Configuración Automatizada con Script](#configuración-automatizada-con-script)
+  - [Configuración Manual](#configuración-manual)
+- [Descripción de Herramientas (`tools.yaml`)](#descripción-de-herramientas-toolsyaml)
 - [Uso del Agente](#uso-del-agente)
-- [Refactorización del Código](#refactorización-del-código)
 - [Evaluación del Agente con ADK](#evaluación-del-agente-con-adk)
+- [Estructura del Proyecto](#estructura-del-proyecto)
 - [Solución de Problemas Comunes](#solución-de-problemas-comunes)
-  - [Error de Certificado SSL (macOS)](#error-de-certificado-ssl-macos)
-  - [Error 404 (Toolset no encontrado)](#error-404-toolset-no-encontrado)
-  - [Error 403 (Permisos de BigQuery)](#error-403-permisos-de-bigquery)
-  - [Error de Importación (`ModuleNotFoundError`)](#error-de-importación-modulenotfounderror)
-  - [Error de Sesión no Cerrada (`Unclosed client session`)](#error-de-sesión-no-cerrada-unclosed-client-session)
-- [Limpieza del Proyecto](#limpieza-del-proyecto)
-- [Despliegue en Cloud Run](#despliegue-en-cloud-run)
-- [Despliegue en Agent Engine](#despliegue-en-agent-engine)
-- [Modelo de Seguridad y Permisos](#modelo-de-seguridad-y-permisos)
-  - [Autenticación del Agente](#autenticación-del-agente)
-  - [Autorización para BigQuery (a través del Servidor MCP)](#autorización-para-bigquery-a-través-del-servidor-mcp)
 
 ---
 
@@ -33,6 +22,22 @@ Asegúrate de tener instalado:
 - Python 3.11 o superior
 - `gcloud CLI` (Google Cloud SDK)
 - `docker` (si planeas ejecutar el servidor MCP localmente)
+
+### Configuración Automatizada con Script (`setup_gcloud.sh`)
+
+El proyecto incluye un script para automatizar la configuración inicial de Google Cloud.
+
+**¿Qué hace el script?**
+-   Configura el ID del proyecto en `gcloud`.
+-   Activa las APIs necesarias (Vertex AI, Cloud Run, Secret Manager).
+-   Crea una cuenta de servicio (`agent-runner`) con los permisos necesarios (`roles/vertexai.user`).
+-   Crea y descarga una clave JSON (`gcloud-sa-key.json`) para esa cuenta de servicio.
+
+**¿Cómo usarlo?**
+```bash
+bash setup_gcloud.sh TU_ID_DE_PROYECTO
+```
+Tras ejecutarlo, el script te indicará cómo configurar la variable de entorno `GOOGLE_APPLICATION_CREDENTIALS` para usar la clave JSON generada, que es el método de autenticación recomendado.
 
 ### Configuración del Entorno Local
 
@@ -107,6 +112,30 @@ Si has modificado `mcp_toolbox/tools.yaml` y el servidor MCP está desplegado en
     gcloud secrets versions add tools --data-file="mcp_toolbox/tools.yaml"
     ```
 
+---
+
+## Descripción de Herramientas (`tools.yaml`)
+
+El agente no tiene consultas SQL en su código. En su lugar, utiliza herramientas definidas en `mcp_toolbox/tools.yaml`. Estas herramientas son servidas por el servidor MCP.
+
+A continuación se describen las herramientas implementadas:
+
+- **`get_daily_visits`**
+  - **Descripción**: Obtiene una lista de las visitas diarias al sitio web desde Google Analytics.
+  - **Parámetros**: Ninguno.
+
+- **`get_daily_transactions_by_browser`**
+  - **Descripción**: Devuelve el número total de transacciones agrupadas por navegador para un día específico.
+  - **Parámetros**: `TABLE_SUFFIX` (string, formato `YYYYMMDD`).
+
+- **`get_monthly_visits`**
+  - **Descripción**: Devuelve el número total de visitas únicas para un mes específico.
+  - **Parámetros**: `YEAR_MONTH` (string, formato `YYYYMM`).
+
+- **`get_monthly_transactions_by_browser`**
+  - **Descripción**: Devuelve el número total de transacciones agrupadas por navegador para un mes específico.
+  - **Parámetros**: `YEAR_MONTH` (string, formato `YYYYMM`).
+
 ## Uso del Agente
 
 Una vez configurado el entorno local y el servidor MCP, puedes ejecutar el agente:
@@ -178,19 +207,22 @@ finally:
 
 ## Evaluación del Agente con ADK
 
-El ADK proporciona una forma de evaluar el rendimiento de tu agente utilizando "evalsets". Un `evalset` es un archivo JSON que contiene una colección de casos de prueba, cada uno con una o más interacciones de usuario.
+El proyecto utiliza "evalsets" para realizar pruebas de regresión y asegurar que el agente se comporta como se espera.
 
-El proyecto incluye un `evalset` de ejemplo llamado `basico.evalset.json` dentro del directorio `agente_ga4/`. Este `evalset` contiene preguntas básicas para verificar que el agente responde correctamente.
+- **¿Qué es un `evalset`?**: Es un archivo JSON que contiene una o más conversaciones de ejemplo, cada una con una entrada de usuario y la respuesta ideal que el agente debería producir.
+- **Archivos existentes**:
+    - `basico.evalset.json`: Contiene preguntas generales para validar la personalidad y las capacidades básicas del agente.
+    - `transacciones_mensuales.evalset.json`: Contiene pruebas específicas para la herramienta de transacciones mensuales.
 
-### Cómo ejecutar la evaluación
-
-Para ejecutar la evaluación, utiliza el siguiente comando:
+**¿Cómo ejecutar la evaluación?**
 
 ```bash
+# Ejecutar el set de pruebas básico
 adk eval --agent_path=agente_ga4/agent.py --eval_set_path=agente_ga4/basico.evalset.json
 ```
 
-Este comando ejecutará las conversaciones definidas en `basico.evalset.json` y mostrará un informe con los resultados, indicando si las respuestas del agente coinciden con las respuestas esperadas.
+**¿Cómo crear un nuevo `evalset`?**
+La forma más sencilla es interactuar con el agente vía `adk web` y, una vez que se obtiene una conversación satisfactoria, guardarla como un nuevo archivo JSON de `evalset` para futuras pruebas.
 
 ## Despliegue en Agent Engine
 

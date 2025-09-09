@@ -33,7 +33,7 @@ Para ejecutar el agente o realizar tareas de desarrollo:
 
 1.  **Activar el entorno virtual**:
     ```bash
-    source venv/bin/activate
+    source v/bin/activate
     ```
 
 2.  **Instalar dependencias**:
@@ -127,5 +127,90 @@ Para desplegar el agente en Google Cloud Agent Engine:
         --region=us-central1 \
         --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket \
         --display_name="Agente_Marketing"
-        agente_ga4/
     ```
+
+## Publicar Agentes de ADK en Agentspace
+
+Esta sección se basa en el documento "Publishing agents built on ADK to Agentspace".
+
+### Prerrequisitos
+
+-   **Proyecto en Allowlist**: Tu proyecto de Google Cloud debe estar en la lista de permitidos de Agentspace.
+-   **Registro Cross-Project**: Si el agente (desplegado en Proyecto A) y Agentspace (en Proyecto B) están en proyectos distintos, se necesita un proceso de *allowlisting* adicional.
+-   **Permisos de Cuenta de Servicio**: La cuenta de servicio `service-PROJECTNUMBER@gcp-sa-discoveryengine.iam.gserviceaccount.com` necesita los siguientes roles:
+    -   `Discovery Engine Service Agent`
+    -   `Editor`
+    -   `Vertex AI User`
+    -   `Vertex AI Viewer`
+    *(Nota: Para encontrar esta cuenta de servicio en IAM, asegúrate de marcar la casilla "Incluir concesiones de roles proporcionadas por Google")*.
+
+### 1. Despliegue en Agent Engine
+
+Asegúrate de que tu `requirements.txt` contiene `google-cloud-aiplatform[agent_engines,adk]`.
+
+```bash
+adk deploy agent_engine \
+    --project=YOUR_PROJECT_ID \
+    --region=us-central1 \
+    --staging_bucket=gs://YOUR_DEPLOYMENT_BUCKET \
+    --display_name="YOUR_AGENT_NAME"
+```
+
+#### Notas importantes sobre el despliegue:
+
+-   El comando `adk deploy` crea un agente **nuevo** cada vez. Actualmente no hay funcionalidad para actualizar uno existente (es una feature request pendiente).
+-   Para **eliminar un agente**, se puede usar la UI de Agent Engine en la consola de Cloud o la [herramienta de registro de agentes](https://github.com/VeerMuchandi/agent_registration_tool).
+-   Actualmente no se pueden ver los **logs de despliegue** en tiempo real (también es una feature request pendiente).
+-   Es crucial **anotar el `reasoning-engine id`** que se muestra al final del despliegue para poder registrar el agente en Agentspace.
+
+### 2. Probar el Agente Desplegado
+
+Puedes usar un script de Python para verificar que el agente funciona en Agent Engine.
+
+```python
+import vertexai
+from vertexai.preview import reasoning_engines
+
+# Configuración inicial
+PROJECT_ID = "YOUR_PROJECT_ID"
+LOCATION = "us-central1"
+vertexai.init(project=PROJECT_ID, location=LOCATION)
+
+# Buscar el Reasoning Engine
+engines = reasoning_engines.ReasoningEngine.list(
+    filter='display_name="YOUR_AGENT_NAME"'
+)
+
+if not engines:
+    print(f"No se encontró el Reasoning Engine con el nombre: YOUR_AGENT_NAME")
+else:
+    engine = engines[0]
+    print(f"Reasoning Engine encontrado: {engine.resource_name}")
+
+    # Crear una sesión
+    session = engine.create_session()
+    print(f"Sesión creada: {session.name}")
+
+    # Ejecutar el agente
+    output = engine.agent_run(
+        session_id=session.name.split('/')[-1],
+        message="Escribe tu prompt aquí"
+    )
+    print(f"Respuesta del agente: {output}")
+```
+
+### 3. Registrar en Agentspace (Método Alternativo)
+
+Existe una herramienta CLI para simplificar el registro y la gestión de agentes.
+
+-   **Repositorio**: [https://github.com/VeerMuchandi/agent_registration_tool](https://github.com/VeerMuchandi/agent_registration_tool)
+-   **Uso**:
+    ```bash
+    python as_registry_client.py --config config.txt
+    ```
+    La herramienta permite acciones como `register_agent`, `update_agent`, `list_registry`, etc.
+
+### Problemas Conocidos
+
+-   **Error de `Malformed Function Call`** (ID de bug: `b/409316706`): Puede ocurrir en transacciones largas y causa que el agente no se ejecute completamente.
+-   **Formato de Salida**: A veces, el formato de la salida del agente puede ser aleatorio y mostrar markdown o HTML crudo.

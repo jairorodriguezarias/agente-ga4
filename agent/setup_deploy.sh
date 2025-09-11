@@ -15,11 +15,11 @@ echo "--- Starting MCP/Toolbox Server Setup for project: $PROJECT_ID ---"
 
 # 1. Create the toolbox-identity service account
 SERVICE_ACCOUNT_EMAIL="toolbox-identity@$PROJECT_ID.iam.gserviceaccount.com"
-echo "Checking for existing service account 'toolbox-identity'..."
+echo "Checking for existing service account 'toolbox-identity'"...
 if gcloud iam service-accounts describe $SERVICE_ACCOUNT_EMAIL --project=$PROJECT_ID >/dev/null 2>&1; then
     echo "Service account 'toolbox-identity' already exists."
 else
-    echo "Creating service account 'toolbox-identity'..."
+    echo "Creating service account 'toolbox-identity'"...
     gcloud iam service-accounts create toolbox-identity --project=$PROJECT_ID --display-name="Toolbox Identity"
 fi
 
@@ -43,6 +43,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 # 3. Create the 'tools' secret in Secret Manager
 # This assumes a file named 'mcp_toolbox/tools.yaml' exists in the current directory.
+
 echo "Creating 'tools' secret from 'mcp_toolbox/tools.yaml'"...
 if [ -f "mcp_toolbox/tools.yaml" ]; then
     if gcloud secrets describe tools --project=$PROJECT_ID > /dev/null 2>&1; then
@@ -72,4 +73,7 @@ gcloud run deploy toolbox \
 
 echo "--- MCP/Toolbox Server Setup Finished ---"
 
-echo "Next steps: Deploy your agent using 'adk deploy agent_engine ...'"
+# Deploy the Agent to Agent Engine
+echo "--- Deploying the Agent to Agent Engine ---"
+echo "This step can take several minutes."
+cd agent && source venv/bin/activate && adk deploy agent_engine agente_ga4 --project=$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2) --region=$(grep GOOGLE_CLOUD_LOCATION .env | cut -d '=' -f2) --staging_bucket=gs://$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2)-agent-engine-bucket --display_name=$(grep AGENT_DISPLAY_NAME .env | cut -d '=' -f2)

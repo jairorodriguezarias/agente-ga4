@@ -14,8 +14,18 @@ PROJECT_ID=$1
 echo "--- Starting MCP/Toolbox Server Setup for project: $PROJECT_ID ---"
 
 # 1. Create the toolbox-identity service account
-echo "Creating service account 'toolbox-identity'"...
-gcloud iam service-accounts create toolbox-identity --project=$PROJECT_ID --display-name="Toolbox Identity"
+SERVICE_ACCOUNT_EMAIL="toolbox-identity@$PROJECT_ID.iam.gserviceaccount.com"
+echo "Checking for existing service account 'toolbox-identity'..."
+if gcloud iam service-accounts describe $SERVICE_ACCOUNT_EMAIL --project=$PROJECT_ID >/dev/null 2>&1; then
+    echo "Service account 'toolbox-identity' already exists."
+else
+    echo "Creating service account 'toolbox-identity'..."
+    gcloud iam service-accounts create toolbox-identity --project=$PROJECT_ID --display-name="Toolbox Identity"
+fi
+
+# Add a delay to allow for propagation
+echo "Waiting for 10 seconds for the service account to propagate..."
+sleep 10
 
 # 2. Grant IAM roles to the service account
 echo "Granting IAM roles to 'toolbox-identity'"...

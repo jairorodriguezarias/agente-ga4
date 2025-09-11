@@ -14,7 +14,7 @@ gcloud config set project $PROJECT_ID
 
 # Enable the required APIs
 echo "Enabling APIs (Vertex AI, Cloud Run, Secret Manager)..."
-gcloud services enable vertexai.googleapis.com \
+gcloud services enable aiplatform.googleapis.com \
     run.googleapis.com \
     secretmanager.googleapis.com
 
@@ -35,18 +35,12 @@ fi
 echo "Granting Vertex AI User role to the service account..."
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
-    --role="roles/vertexai.user"
+    --role="roles/aiplatform.user"
 
-# Create a service account key
-KEY_FILE="gcloud-sa-key.json"
-echo "Creating service account key..."
-gcloud iam service-accounts keys create "$KEY_FILE" \
-    --iam-account=$SERVICE_ACCOUNT_EMAIL
-
-echo "Service account key created and saved to '$KEY_FILE'"
-echo "This is the recommended authentication method."
-echo "To use it, set the GOOGLE_APPLICATION_CREDENTIALS environment variable:"
-echo "export GOOGLE_APPLICATION_CREDENTIALS=\"$(pwd)/$KEY_FILE\""
+# Authentication for local development
+echo "Service account key creation is disabled in your organization."
+echo "For local development, you will use Application Default Credentials (ADC) with your own user account."
+echo "Please run 'gcloud auth application-default login' after this script completes."
 
 # Create an API key as an alternative
 echo "Creating an API key as an alternative..."

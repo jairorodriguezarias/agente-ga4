@@ -1,5 +1,5 @@
-google-adk
-google-cloud-aiplatform[agent_engines]
+google-cloud-aiplatform[agent_engines,adk]
 cloudpickle
 mcp
 PyYAML
+toolbox_core

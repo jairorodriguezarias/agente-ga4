@@ -113,21 +113,46 @@ gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
 
 ## Deployment on Agent Engine (for Gemini)
 
-To deploy the agent to Google Cloud Agent Engine:
+This section documents the step-by-step process to deploy the agent to Google Cloud Agent Engine.
 
-1.  **Ensure the GCS bucket exists**:
+### 1. Pre-deployment checklist
+
+Before deploying, make sure you have the following ready:
+
+*   **Google Cloud Project ID**: Your project ID should be defined in the `agent/.env` file under the `GOOGLE_CLOUD_PROJECT` variable.
+*   **GCS Bucket**: Ensure a Google Cloud Storage bucket exists for staging. The convention is `gs://<YOUR_PROJECT_ID>-agent-engine-bucket`. If it doesn't exist, create it:
     ```bash
     gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
     ```
+*   **Dependencies**: Make sure all Python dependencies are listed in `agent/agente_ga4/requirements.txt`. During a recent deployment, `toolbox_core` was missing, which caused a `ModuleNotFoundError`.
 
-2.  **Deploy the agent to Agent Engine**:
+### 2. Deployment Command
+
+The deployment is done using the `adk` command-line tool. The command needs to be run from the root of the project directory.
+
+1.  **Activate the virtual environment**:
     ```bash
-    adk deploy agent_engine \
-        --project=YOUR_PROJECT_ID \
-        --region=us-central1 \
-        --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket \
-        --display_name="Agente_Marketing"
+    source agent/venv/bin/activate
     ```
+
+2.  **Run the deployment command**:
+    The following command will deploy the agent. It changes into the `agent` directory and then executes `adk deploy`. Make sure your `.env` file in the `agent` directory has the correct values for `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and `AGENT_DISPLAY_NAME`.
+
+    ```bash
+    cd agent && adk deploy agent_engine agente_ga4 --project=$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2) --region=$(grep GOOGLE_CLOUD_LOCATION .env | cut -d '=' -f2) --staging_bucket=gs://$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2)-agent-engine-bucket --display_name=$(grep AGENT_DISPLAY_NAME .env | cut -d '=' -f2)
+    ```
+    *Note: The command above dynamically reads the values from your `.env` file.*
+
+### 3. Post-deployment
+
+After a successful deployment, the command will output the `Resource name` of your agent.
+
+1.  **Save the Resource Name**: It is highly recommended to save this resource name. Add it to your `agent/.env` file:
+    ```
+    AGENT_ENGINE_RESOURCE_NAME=projects/your-project-number/locations/us-central1/reasoningEngines/your-engine-id
+    ```
+
+2.  **Test the Deployed Agent**: You can use the provided Python snippet from the deployment output to test your agent.
 
 ## Publishing ADK Agents to Agentspace
 

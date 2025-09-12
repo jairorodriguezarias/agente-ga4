@@ -26,11 +26,11 @@ This step configures your Google Cloud project, enables necessary APIs, and crea
 
 This step deploys the MCP/Toolbox server, which the agent uses to execute tools.
 
-1.  **Ensure you are in the `agent` directory.**
+1.  **Navigate to the project root directory.**
 2.  **Run the deployment script:**
     Provide your Google Cloud Project ID as an argument.
     ```bash
-    ./setup_deploy.sh YOUR_PROJECT_ID
+    agent/setup_deploy.sh YOUR_PROJECT_ID
     ```
     This script handles the creation of the `toolbox-identity` service account, sets its permissions, and deploys the server to Cloud Run.
 
@@ -84,6 +84,8 @@ To run the agent locally for development or testing:
 
 The `setup_deploy.sh` script automates the MCP setup. This section provides details on what the script does.
 
+**Important:** The `agent/mcp_toolbox/tools.yaml` file has a hardcoded BigQuery project ID (`agentemarketing`). You must change this to your own project ID before deploying.
+
 1.  **`toolbox-identity` Service Account:** A dedicated service account is created for the MCP server.
 2.  **Permissions:** The service account is granted the following roles:
     *   `roles/secretmanager.secretAccessor`: To read the `tools.yaml` configuration from Secret Manager.
@@ -111,4 +113,5 @@ The `setup_deploy.sh` script already grants the `roles/bigquery.jobUser` to the 
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
     --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
+```
 ```

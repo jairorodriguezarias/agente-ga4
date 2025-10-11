@@ -3,3 +3,4 @@ __pycache__/
 agente_ga4/.adk/
 definicion.md
 gcloud-sa-key.json
+.DS_Store

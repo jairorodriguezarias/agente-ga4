@@ -1,7 +1,7 @@
 sources:
   my-bq-source:
     kind: bigquery
-    project: agentemarketing
+    project: agent-space-469714
 
 tools:
   get_daily_visits:
@@ -11,8 +11,7 @@ tools:
       SELECT *
       FROM `bigquery-public-data.google_analytics_sample.daily_visits`
       LIMIT 5
-    description: |
-      Use this tool to get information on daily website visits from Google Analytics.
+    description: Use this tool to get information on daily website visits from Google Analytics.
 
   get_daily_transactions_by_browser:
     kind: bigquery-sql

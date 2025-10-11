@@ -7,8 +7,6 @@ from .config import AGENT_CONFIG
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
-
 # Define the remote tool for the MCP server
 # This assumes the MCP server is running on localhost:8080
 toolbox = ToolboxSyncClient("https://toolbox-170927488290.us-central1.run.app")
@@ -21,4 +19,4 @@ root_agent = Agent(
     description=AGENT_CONFIG['description'],
     instruction=SYSTEM_PROMPT,
     tools=tools,
-)
+ )

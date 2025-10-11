@@ -57,6 +57,46 @@ This final step deploys your agent code to the Agent Engine. It's recommended to
 
 ---
 
+## Step 4: Register the Agent with Agentspace
+
+After deploying the agent to Agent Engine, you need to register it with an assistant in Agentspace to make it available in the UI.
+
+1.  **Find your Engine/APP_ID:**
+    You can list the available engines (which correspond to the `APP_ID`) using the following command:
+    ```bash
+    curl -X GET \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "Content-Type: application/json" \
+    -H "x-goog-user-project: agent-space-469714" \
+    "https://discoveryengine.googleapis.com/v1alpha/projects/agent-space-469714/locations/global/collections/default_collection/engines"
+    ```
+
+2.  **Register the agent:**
+    Use the following `PATCH` command to register your deployed agent with an assistant. Make sure to replace the placeholders with your actual project and engine information.
+    ```bash
+    curl -X PATCH \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "Content-Type: application/json" \
+    -H "x-goog-user-project: agent-space-469714" \
+    "https://discoveryengine.googleapis.com/v1alpha/projects/323290918249/locations/global/collections/default_collection/engines/gemini-enterprise-17600951_1760095106457/assistants/default_assistant?updateMask=agent_configs" -d '{
+        "name": "projects/323290918249/locations/global/collections/default_collection/engines/gemini-enterprise-17600951_1760095106457/assistants/default_assistant",
+        "displayName": "Default Assistant",
+        "agentConfigs": [{
+          "displayName": "agente_ga4",
+          "vertexAiSdkAgentConnectionInfo": {
+            "reasoningEngine": "projects/agent-space-469714/locations/us-central1/reasoningEngines/7530533148405268480"
+          },
+          "toolDescription": "Agente GA4",
+          "icon": {
+            "uri": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/corporate_fare/default/24px.svg"
+          },
+          "id": "agente_ga4_agent"
+        }]
+      }'
+    ```
+
+---
+
 ## Manual Setup & Technical Details
 
 This section provides more details on the components and manual steps for developers.
@@ -113,5 +153,4 @@ The `setup_deploy.sh` script already grants the `roles/bigquery.jobUser` to the 
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
     --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
-```
 ```

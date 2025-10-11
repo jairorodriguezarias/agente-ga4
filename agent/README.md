@@ -205,6 +205,23 @@ finally:
     toolbox.close()
 ```
 
+## Architecture
+
+```
++----------------+      +-----------------------------+      +--------------------------------+
+|      User      |----->|   ADK Agent (Agent Engine)  |----->|  Toolbox Server (Cloud Run)    |
++----------------+      +-----------------------------+      +--------------------------------+
+                                                                           |
+                                                                           |
+                                          +--------------------------------+--------------------------------+
+                                          |                                                                 |
+                                          v                                                                 v
+                               +---------------------+                                     +--------------------------+
+                               |      BigQuery       |                                     |      Secret Manager      |
+                               |   (Data Platform)   |                                     |  (stores tools.yaml)     |
+                               +---------------------+                                     +--------------------------+
+```
+
 ## Agent Evaluation with ADK
 
 The project uses "evalsets" to perform regression testing and ensure the agent behaves as expected.

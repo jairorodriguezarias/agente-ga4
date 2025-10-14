@@ -11,10 +11,11 @@ load_dotenv()
 
 # --- Configuración ---
 # Carga la configuración desde variables de entorno para mayor flexibilidad
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "agentemarketing")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-AGENT_NAME = os.getenv("AGENT_DISPLAY_NAME", "Agente_Marketing")
-SESSION_ID = "u_123"
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
+LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
+AGENT_NAME = os.getenv("AGENT_DISPLAY_NAME")
+SESSION_ID = os.getenv("TEST_SESSION_ID", "session_test_abc")
+prompt_text = os.getenv("TEST_PROMPT_AAPL", "AAPL")
 
 def main():
     """
@@ -48,7 +49,6 @@ def main():
 
     # --- 3. Ejecutar el Agente ---
     print("\nEnviando consulta al agente...")
-    prompt_text = "AAPL"
     print(f">> {prompt_text}")
 
     output = engine.agent_run(

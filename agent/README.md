@@ -9,7 +9,7 @@ This project is an agent created with the Google Agent Development Kit (ADK), sp
   - [Manual Setup](#manual-setup)
 - [Tool Description (`tools.yaml`)](#tool-description-toolsyaml)
 - [Agent Usage](#agent-usage)
-- [Agent Evaluation with ADK](#agent-evaluation-with-adk)
+- [Agent Evaluation](#agent-evaluation)
 - [Project Structure](#project-structure)
 - [Troubleshooting Common Issues](#troubleshooting-common-issues)
 
@@ -39,78 +39,63 @@ bash setup_gcloud.sh YOUR_PROJECT_ID
 ```
 After running, the script will instruct you on how to set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to use the generated JSON key, which is the recommended authentication method.
 
-### Local Environment Setup
+### Manual Setup & Technical Details
+
+This section provides more details on the components and manual steps for developers.
+
+#### Local Development
+
+To run the agent locally for development or testing:
 
 1.  **Activate the virtual environment**:
     ```bash
     source venv/bin/activate
     ```
-    *Note: If the virtual environment does not exist or is corrupted, it will be created automatically with Python 3.11.6 when installing dependencies.*
-
-2.  **Install Python dependencies**:
+2.  **Install dependencies**:
     ```bash
-    pip install -r requirements.txt
+    pip install -r agente_ga4/requirements.txt
+    ```
+3.  **Authentication**:
+    Ensure you are authenticated. For a new project, follow Step 1.3 from the "Full Setup" guide. For existing setups, ensure `gcloud auth application-default login` is active or `GOOGLE_APPLICATION_CREDENTIALS` is set.
+4.  **Run the agent (locally)**:
+    ```bash
+    adk web --agent_path=agente_ga4/agent.py
     ```
 
-3.  **Authenticate with Google Cloud**:
-    Make sure you are logged in with your Application Default Credentials (ADC). This is crucial for the agent and tools to interact with Google Cloud services.
-    ```bash
-    gcloud auth application-default login
-    ```
+#### MCP/Toolbox Server Details
 
-### Google Cloud Setup
+The `setup_deploy.sh` script automates the MCP setup. This section provides details on what the script does.
 
-1.  **Enable Google Cloud services**:
-    Make sure the following services are enabled in your Google Cloud project (`YOUR_PROJECT_ID`):
-    ```bash
-    gcloud services enable cloudresourcemanager.googleapis.com \
-                           servicenetworking.googleapis.com \
-                           run.googleapis.com \
-                           cloudbuild.googleapis.com \
-                           cloudfunctions.googleapis.com \
-                           aiplatform.googleapis.com \
-                           sqladmin.googleapis.com \
-                           compute.googleapis.com
-    ```
+**Important:** The `agent/mcp_toolbox/tools.yaml` file has a hardcoded BigQuery project ID (`agentemarketing`). You must change this to your own project ID before deploying.
 
-2.  **Configure BigQuery permissions**:
-    If you get an `Access Denied` error related to `bigquery.jobs.create` when running the agent, it means the `toolbox-identity` service account does not have the necessary permissions to interact with BigQuery.
-    **Solution:** Grant the `roles/bigquery.jobUser` role to the `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com` service account in your project.
-    ```bash
-    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
-        --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
-        --role roles/bigquery.jobUser
-    ```
+1.  **`toolbox-identity` Service Account:** A dedicated service account is created for the MCP server.
+2.  **Permissions:** The service account is granted the following roles:
+    *   `roles/secretmanager.secretAccessor`: To read the `tools.yaml` configuration from Secret Manager.
+    *   `roles/cloudsql.client`: To connect to Cloud SQL databases.
+    *   `roles/bigquery.jobUser`: To run BigQuery jobs.
+3.  **Secret Configuration:** The `mcp_toolbox/tools.yaml` file is uploaded to Secret Manager as a secret named `tools`.
+4.  **Cloud Run Deployment:** The public `toolbox` image (`us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest`) is deployed to Cloud Run, configured to use the `toolbox-identity` service account and the `tools` secret.
 
-### MCP Server (Toolbox) Setup
+### Additional Configuration
 
-The agent uses a tool server (MCP Toolbox) to interact with BigQuery. This server can be run locally or deployed on Cloud Run.
+#### Fix for SSL Certificate Error on macOS
 
-For a detailed example of MCP setup for BigQuery, you can consult the [official quickstart guide](https://googleapis.github.io/genai-toolbox/samples/bigquery/mcp_quickstart/).
+**Problem:** `aiohttp.client_exceptions.ClientConnectorCertificateError` with `[SSL: CERTIFICATE_VERIFY_FAILED]`.
 
-1.  **Download the `toolbox` executable**:
-    **Note:** The following command is for `darwin` systems (macOS). If you use a different operating system, please adjust the download URL to your architecture.
-    ```bash
-    cd mcp_toolbox
-    export VERSION=0.7.0
-    # For darwin systems (macOS)
-    curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/darwin/amd64/toolbox
-    # For linux systems
-    # curl -O https://storage.googleapis.com/genai-toolbox/v$VERSION/linux/amd64/toolbox
-    chmod +x toolbox
-    cd .. # Return to the project root directory
-    ```
+**Solution:** The `venv/bin/activate` script has been modified to export `SSL_CERT_FILE` pointing to `certifi` certificates. It is activated automatically with `source venv/bin/activate`.
 
-2.  **Configure `tools.yaml`**:
-    The `mcp_toolbox/tools.yaml` file defines the tools available to the MCP server. Ensure that the configuration of the tools and `toolsets` is correct.
-    *   The initial query for `search_release_notes_bq` was changed to a `daily_visits` query from Google Analytics.
-    *   The tool name and its description were updated to reflect this change (`get_daily_visits`).
+#### BigQuery Permissions
 
-3.  **Update the `tools` secret in Secret Manager**:
-    If you have modified `mcp_toolbox/tools.yaml` and the MCP server is deployed on Cloud Run, you need to update the secret in Secret Manager for the changes to take effect.
-    ```bash
-    gcloud secrets versions add tools --data-file="mcp_toolbox/tools.yaml"
-    ```
+The `setup_deploy.sh` script already grants the `roles/bigquery.jobUser` to the `toolbox-identity` service account. This section is for reference.
+
+**Problem:** `Error 403: Access Denied` related to `bigquery.jobs.create`.
+
+**Solution:** Ensure the `toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com` service account has the `roles/bigquery.jobUser` role.
+```bash
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
+    --role roles/bigquery.jobUser
+```
 
 ---
 
@@ -144,6 +129,18 @@ Once the local environment and the MCP server are configured, you can run the ag
 adk web --agent_path=agente_ga4/agent.py
 ```
 Then, you can interact with the agent in your terminal.
+
+## Agent Evaluation
+
+This project includes a script to evaluate the agent's performance using a predefined evaluation set.
+
+**How to run the evaluation?**
+
+```bash
+./evaluate_agent.sh --eval_dataset=agente_ga4/evaluation/basico.evalset.json
+```
+
+This will run the evaluation using the `basico.evalset.json` dataset and print the results to the console.
 
 ## Code Refactoring
 
@@ -221,25 +218,6 @@ finally:
                                |   (Data Platform)   |                                     |  (stores tools.yaml)     |
                                +---------------------+                                     +--------------------------+
 ```
-
-## Agent Evaluation with ADK
-
-The project uses "evalsets" to perform regression testing and ensure the agent behaves as expected.
-
-- **What is an `evalset`?**: It is a JSON file containing one or more sample conversations, each with a user input and the ideal response the agent should produce.
-- **Existing files**:
-    - `basico.evalset.json`: Contains general questions to validate the agent's personality and basic capabilities.
-    - `transacciones_mensuales.evalset.json`: Contains specific tests for the monthly transactions tool.
-
-**How to run the evaluation?**
-
-```bash
-# Run the basic test set
-adk eval --agent_path=agente_ga4/agent.py --eval_set_path=agente_ga4/basico.evalset.json
-```
-
-**How to create a new `evalset`?**
-The easiest way is to interact with the agent via `adk web` and, once a satisfactory conversation is obtained, save it as a new JSON `evalset` file for future tests.
 
 ## Deployment on Agent Engine
 

@@ -2,6 +2,9 @@
 
 This file describes the structure and usage of this ADK agent project, with specific information for the Gemini model.
 
+## ADK Function Documentation
+The documentation for ADK functions can be found at https://googleapis.github.io/python-genai/genai.html#
+
 ## Full Setup from Scratch
 
 This guide will take you from a new Google Cloud project to a fully deployed Agent and MCP/Toolbox server.
@@ -120,6 +123,18 @@ To run the agent locally for development or testing:
     adk web --agent_path=agente_ga4/agent.py
     ```
 
+### Agent Evaluation
+
+This project includes a script to evaluate the agent's performance using a predefined evaluation set.
+
+**How to run the evaluation?**
+
+```bash
+./evaluate_agent.sh --eval_dataset=agente_ga4/evaluation/basico.evalset.json
+```
+
+This will run the evaluation using the `basico.evalset.json` dataset and print the results to the console.
+
 ### MCP/Toolbox Server Details
 
 The `setup_deploy.sh` script automates the MCP setup. This section provides details on what the script does.
@@ -153,4 +168,6 @@ The `setup_deploy.sh` script already grants the `roles/bigquery.jobUser` to the 
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
     --member serviceAccount:toolbox-identity@YOUR_PROJECT_ID.iam.gserviceaccount.com \
     --role roles/bigquery.jobUser
+```
+
 ```

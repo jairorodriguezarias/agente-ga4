@@ -1,8 +1,8 @@
-_import sys
+import sys
 import os
 
 # Agrega el directorio raíz del proyecto a sys.path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -11,6 +11,11 @@ from agente_ga4.agent import root_agent, toolbox # 1. Importar toolbox
 from dotenv import load_dotenv
 
 load_dotenv()  # Carga las variables de entorno desde el archivo .env
+
+# Carga las variables de entorno para pruebas
+TEST_USER_ID = os.getenv("TEST_USER_ID", "user_test_001")
+TEST_MESSAGE = os.getenv("TEST_MESSAGE", "what is the total revenue for the month of May 2024?")
+
 
 # TODO: Fill in these values for your project
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
@@ -36,13 +41,13 @@ app = reasoning_engines.AdkApp(
 )
 
 # Create a local session to maintain conversation history
-session = app.create_session(user_id="u_123")
+session = app.create_session(user_id=TEST_USER_ID)
 print(session)
 
 events = list(app.stream_query(
-    user_id="u_123",
+    user_id=TEST_USER_ID,
     session_id=session.id,
-    message="whats the weather in new york",
+    message=TEST_MESSAGE,
 ))
 
 # The full event stream shows the agent's thought process

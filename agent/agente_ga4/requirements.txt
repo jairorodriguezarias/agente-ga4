@@ -3,3 +3,4 @@ cloudpickle
 mcp
 PyYAML
 toolbox_core
+pydantic==2.11.7

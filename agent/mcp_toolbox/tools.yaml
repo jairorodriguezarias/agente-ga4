@@ -58,14 +58,13 @@ tools:
     statement: |
       SELECT
         device.browser,
-        SUM(t.transactionRevenue) AS monthly_total_transactions
+        SUM(h.transaction.transactionRevenue) AS monthly_total_transactions
       FROM
         `bigquery-public-data.google_analytics_sample.ga_sessions_*`,
-        UNNEST(hits) AS h,
-        UNNEST(h.transaction) AS t
+        UNNEST(hits) AS h
       WHERE
         _TABLE_SUFFIX LIKE CONCAT(@YEAR_MONTH, '%')
-        AND t.transactionRevenue IS NOT NULL
+        AND h.transaction.transactionRevenue IS NOT NULL
       GROUP BY
         device.browser
       ORDER BY

@@ -1,55 +1,62 @@
 import asyncio
 import os
 import vertexai
-from vertexai.preview import agent_engines
+from vertexai import agent_engines
 from dotenv import load_dotenv
 
 # Cargar variables de entorno desde .env
 load_dotenv()
 
 # --- Configuración ---
-# Se asegura de que las variables de entorno estén configuradas o usa valores predeterminados
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "agentemarketing")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+# Se asegura de que las variables de entorno estén configuradas
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
+LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
 
-# El ID del agente que desplegaste. Deberías actualizarlo si despliegas una nueva versión.
-AGENT_ENGINE_ID = "8433487281507008512"
+# Obtiene el resource name del agente desde las variables de entorno
+AGENT_ENGINE_RESOURCE_NAME = os.getenv("AGENT_ENGINE_RESOURCE_NAME")
+TEST_USER_ID = os.getenv("TEST_USER_ID", "user_test_001")
+TEST_QUERY_ES = os.getenv("TEST_QUERY_ES", "cuál es el total de transacciones para el navegador Chrome en el mes 202405?")
 
-async def main():
+def main():
     """
-    Función principal asíncrona para conectarse a un agente desplegado y probarlo.
+    Función principal para conectarse a un agente desplegado y probarlo.
     """
+    if not all([PROJECT_ID, LOCATION, AGENT_ENGINE_RESOURCE_NAME]):
+        print("Error: Asegúrate de que las variables de entorno GOOGLE_CLOUD_PROJECT, GOOGLE_CLOUD_LOCATION, y AGENT_ENGINE_RESOURCE_NAME estén configuradas.")
+        return
+
     vertexai.init(project=PROJECT_ID, location=LOCATION)
 
     # Obtener el agente desplegado
-    print(f"Conectando al agente: {AGENT_ENGINE_ID}...")
+    print(f"Conectando al agente: {AGENT_ENGINE_RESOURCE_NAME}...")
     try:
-        remote_app = agent_engines.get(f"projects/{PROJECT_ID}/locations/{LOCATION}/reasoningEngines/{AGENT_ENGINE_ID}")
+        remote_app = agent_engines.get(AGENT_ENGINE_RESOURCE_NAME)
     except Exception as e:
-        print(f"Error: No se pudo encontrar el agente desplegado. Verifica el ID.")
+        print(f"Error: No se pudo encontrar el agente desplegado. Verifica el resource name.")
         print(f"Detalles: {e}")
         return
     
-    # Crear una sesión de forma asíncrona
+    # Crear una sesión de forma síncrona
     print("Creando sesión remota...")
-    remote_session = await remote_app.async_create_session(user_id="u_789")
-    print(f"Sesión creada: {remote_session.id}")
+    remote_session = remote_app.create_session(user_id=TEST_USER_ID)
+    print(f"Sesión creada: {remote_session}")
 
     # Enviar una consulta al agente desplegado
     print("Enviando consulta...")
-    query = "cuál es el total de transacciones para el navegador Chrome en el mes 202405?"
+    query = TEST_QUERY_ES
     print(f">> {query}")
     response_stream = remote_app.stream_query(
-        session_id=remote_session.id,
+        user_id=TEST_USER_ID,
+        session_id=remote_session['id'],
         message=query
     )
 
     print("\n--- Respuesta del Agente Remoto ---")
     for chunk in response_stream:
-        if "text" in chunk.content.parts[0]:
-            print(chunk.content.parts[0].text, end="")
+        if "text" in chunk['content']['parts'][0]:
+            print(chunk['content']['parts'][0]['text'], end="")
     print("\n")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

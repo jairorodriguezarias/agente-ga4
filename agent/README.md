@@ -10,6 +10,7 @@ This project is an agent created with the Google Agent Development Kit (ADK), sp
 - [Tool Description (`tools.yaml`)](#tool-description-toolsyaml)
 - [Agent Usage](#agent-usage)
 - [Agent Evaluation](#agent-evaluation)
+- [Deployment and Testing Scripts](#deployment-and-testing-scripts)
 - [Project Structure](#project-structure)
 - [Troubleshooting Common Issues](#troubleshooting-common-issues)
 
@@ -142,6 +143,60 @@ This project includes a script to evaluate the agent's performance using a prede
 
 This will run the evaluation using the `basico.evalset.json` dataset and print the results to the console.
 
+## Deployment and Testing Scripts
+
+This project includes a set of scripts located in `agente_ga4/deployment/` to facilitate testing and deployment of the agent.
+
+### Deployment Script: `deploy.py`
+
+This script serves two main purposes: local testing and deployment to Vertex AI Agent Engine.
+
+1.  **Local Testing**: The script first runs a local test by sending a sample query to the agent and printing the full event stream and the final response. This is useful for quick debugging.
+2.  **Deployment**: After the local test, the script uses `vertexai.agent_engines.create()` to package and deploy the agent to Google Cloud.
+
+**How to run it:**
+```bash
+python agente_ga4/deployment/deploy.py
+```
+
+### Testing Scripts
+
+A suite of test scripts is provided in `agente_ga4/deployment/test_deploy/` to verify the agent's functionality at different stages.
+
+#### Local Testing: `test_deploy_local.py`
+
+*   **Purpose**: To test the agent's logic on your local machine without any cloud interaction.
+*   **How it works**: It initializes the agent locally, sends a predefined query, and prints the response. It's ideal for quick checks during development.
+
+#### Remote Testing (by Name): `test_deploy_agent.py`
+
+*   **Purpose**: To test a deployed agent in the cloud by looking it up by its display name.
+*   **How it works**: It searches for a deployed `ReasoningEngine` with a specific `display_name`, creates a session, and sends a query to it.
+
+#### Remote Testing (by ID): `test_deploy_agent_engine.py`
+
+*   **Purpose**: To test a specific version of a deployed agent using its unique resource name.
+*   **How it works**: It connects directly to a deployed agent using its full `resource_name` (e.g., `projects/.../reasoningEngines/...`), and sends a query. This is the most reliable way to test a specific deployed instance.
+
+### Deployment with ADK Command
+
+As an alternative to the `deploy.py` script, you can use the `adk` command-line tool to deploy the agent.
+
+To deploy the agent to Google Cloud Agent Engine, follow these steps. The configuration values (`project`, `region`, etc.) are taken from the `.env` file.
+
+1.  **Ensure the GCS bucket exists:** Agent Engine needs a GCS bucket for staging. If it doesn't exist yet, create it with this command:
+    ```bash
+    gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
+    ```
+
+2.  **Check dependencies:** Make sure your `agente_ga4/requirements.txt` file contains `google-adk` and `google-cloud-aiplatform[agent_engines]`.
+
+3.  **Deploy the agent:** Run the following command in your terminal from the project's root directory.
+    ```bash
+    adk deploy agent_engine --project=YOUR_PROJECT_ID --region=us-central1 --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket --display_name="Agente_Marketing" agente_ga4/
+    ```
+    This command will package your code, upload it to the staging bucket, create a container image, and deploy it to the managed Agent Engine service. The process can take several minutes.
+
 ## Code Refactoring
 
 For better organization and maintainability, the agent's code has been refactored:
@@ -218,23 +273,6 @@ finally:
                                |   (Data Platform)   |                                     |  (stores tools.yaml)     |
                                +---------------------+                                     +--------------------------+
 ```
-
-## Deployment on Agent Engine
-
-To deploy the agent to Google Cloud Agent Engine, follow these steps. The configuration values (`project`, `region`, etc.) are taken from the `.env` file.
-
-1.  **Ensure the GCS bucket exists:** Agent Engine needs a GCS bucket for staging. If it doesn't exist yet, create it with this command:
-    ```bash
-    gcloud storage buckets create gs://agentemarketing-agent-engine-bucket --project=agentemarketing --location=us-central1
-    ```
-
-2.  **Check dependencies:** Make sure your `agente_ga4/requirements.txt` file contains `google-adk` and `google-cloud-aiplatform[agent_engines]`.
-
-3.  **Deploy the agent:** Run the following command in your terminal from the project's root directory.
-    ```bash
-    adk deploy agent_engine --project=agentemarketing --region=us-central1 --staging_bucket=gs://agentemarketing-agent-engine-bucket --display_name="Agente_Marketing" agente_ga4/
-    ```
-    This command will package your code, upload it to the staging bucket, create a container image, and deploy it to the managed Agent Engine service. The process can take several minutes.
 
 ## Security and Permissions Model
 

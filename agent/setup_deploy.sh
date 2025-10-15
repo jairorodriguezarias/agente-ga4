@@ -76,4 +76,4 @@ echo "--- MCP/Toolbox Server Setup Finished ---"
 # Deploy the Agent to Agent Engine
 echo "--- Deploying the Agent to Agent Engine ---"
 echo "This step can take several minutes."
-source venv/bin/activate && adk deploy agent_engine agente_ga4 --project=$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2) --region=$(grep GOOGLE_CLOUD_LOCATION .env | cut -d '=' -f2) --staging_bucket=gs://$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2)-agent-engine-bucket --display_name=$(grep AGENT_DISPLAY_NAME .env | cut -d '=' -f2)
+source venv/bin/activate && adk deploy agent_engine agente_ga4 --project=$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2) --region=$(grep GOOGLE_CLOUD_LOCATION .env | cut -d '=' -f2) --staging_bucket=gs://$(grep GOOGLE_CLOUD_PROJECT .env | cut -d '=' -f2)-agent-engine-bucket --display_name=$(grep AGENT_DISPLAY_NAME .env | cut -d '=' -f2) --env_file .env

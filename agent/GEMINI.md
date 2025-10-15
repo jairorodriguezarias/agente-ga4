@@ -135,6 +135,30 @@ This project includes a script to evaluate the agent's performance using a prede
 
 This will run the evaluation using the `basico.evalset.json` dataset and print the results to the console.
 
+### Deployment and Testing Scripts
+
+This project includes a set of scripts located in `agente_ga4/deployment/` to facilitate testing and deployment of the agent.
+
+#### Deployment Script: `deploy.py`
+
+This script serves two main purposes: local testing and deployment to Vertex AI Agent Engine.
+
+1.  **Local Testing**: The script first runs a local test by sending a sample query to the agent and printing the full event stream and the final response. This is useful for quick debugging.
+2.  **Deployment**: After the local test, the script uses `vertexai.agent_engines.create()` to package and deploy the agent to Google Cloud.
+
+**How to run it:**
+```bash
+python agente_ga4/deployment/deploy.py
+```
+
+#### Testing Scripts
+
+A suite of test scripts is provided in `agente_ga4/deployment/test_deploy/` to verify the agent's functionality at different stages.
+
+*   **`test_deploy_local.py`**: Tests the agent's logic on your local machine without any cloud interaction.
+*   **`test_deploy_agent.py`**: Tests a deployed agent in the cloud by looking it up by its display name.
+*   **`test_deploy_agent_engine.py`**: Tests a specific version of a deployed agent using its unique resource name.
+
 ### MCP/Toolbox Server Details
 
 The `setup_deploy.sh` script automates the MCP setup. This section provides details on what the script does.

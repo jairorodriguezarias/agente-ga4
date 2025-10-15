@@ -1,5 +1,25 @@
 # GA4 Agent
 
+## 概要 (Resumen de la Demo)
+
+Este proyecto es una demostración de un agente avanzado construido con el **Agent Development Kit (ADK) de Google** sobre Vertex AI. La demo cubrirá los siguientes aspectos clave de la funcionalidad y seguridad del agente.
+
+### ¿Qué se revisará en la demo?
+
+1.  **Interacción con el Agente:**
+    *   Se mostrará cómo interactuar con el agente para realizar tareas de análisis de datos.
+
+2.  **Uso de Herramientas e Integración con BigQuery:**
+    *   Se demostrará la capacidad del agente para comprender preguntas relacionadas con datos de Google Analytics.
+    *   Se observará cómo el agente selecciona y utiliza de forma autónoma las herramientas de BigQuery adecuadas para consultar un dataset público.
+
+3.  **Seguridad con Model Armor:**
+    *   Se revisará la configuración de seguridad a nivel de proyecto (los "floor settings") para proteger al modelo.
+    *   Se probará el agente con "prompts" dañinos o inapropiados para demostrar las capas de seguridad.
+    *   Se analizará (si están disponibles) los logs de Model Armor en Cloud Logging para ver cómo el servicio inspecciona y clasifica las solicitudes.
+
+---
+
 This project is an agent created with the Google Agent Development Kit (ADK), specializing in the analysis of Google Analytics data.
 
 ## Table of Contents
@@ -50,17 +70,17 @@ To run the agent locally for development or testing:
 
 1.  **Activate the virtual environment**:
     ```bash
-    source venv/bin/activate
+source venv/bin/activate
     ```
 2.  **Install dependencies**:
     ```bash
-    pip install -r agente_ga4/requirements.txt
+pip install -r agente_ga4/requirements.txt
     ```
 3.  **Authentication**:
     Ensure you are authenticated. For a new project, follow Step 1.3 from the "Full Setup" guide. For existing setups, ensure `gcloud auth application-default login` is active or `GOOGLE_APPLICATION_CREDENTIALS` is set.
 4.  **Run the agent (locally)**:
     ```bash
-    adk web --agent_path=agente_ga4/agent.py
+adk web --agent_path=agente_ga4/agent.py
     ```
 
 #### MCP/Toolbox Server Details
@@ -186,14 +206,14 @@ To deploy the agent to Google Cloud Agent Engine, follow these steps. The config
 
 1.  **Ensure the GCS bucket exists:** Agent Engine needs a GCS bucket for staging. If it doesn't exist yet, create it with this command:
     ```bash
-    gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
+gcloud storage buckets create gs://YOUR_PROJECT_ID-agent-engine-bucket --project=YOUR_PROJECT_ID --location=us-central1
     ```
 
 2.  **Check dependencies:** Make sure your `agente_ga4/requirements.txt` file contains `google-adk` and `google-cloud-aiplatform[agent_engines]`.
 
 3.  **Deploy the agent:** Run the following command in your terminal from the project's root directory.
     ```bash
-    adk deploy agent_engine --project=YOUR_PROJECT_ID --region=us-central1 --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket --display_name="Agente_Marketing" agente_ga4/
+adk deploy agent_engine --project=YOUR_PROJECT_ID --region=us-central1 --staging_bucket=gs://YOUR_PROJECT_ID-agent-engine-bucket --display_name="Agente_Marketing" agente_ga4/
     ```
     This command will package your code, upload it to the staging bucket, create a container image, and deploy it to the managed Agent Engine service. The process can take several minutes.
 
@@ -299,3 +319,4 @@ When the agent needs to access BigQuery, it does so through the **MCP Server (To
     5.  **Access to BigQuery** (the `toolbox-identity` Service Account runs the query in BigQuery, provided it has the `roles/bigquery.queryUser` or `roles/bigquery.jobUser` role)
 
 This model ensures that the local agent does not directly need BigQuery permissions, but instead delegates that responsibility to the MCP server, which operates with a more restricted and specific set of permissions for its function.
+

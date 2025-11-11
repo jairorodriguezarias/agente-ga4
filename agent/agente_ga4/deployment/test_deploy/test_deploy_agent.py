@@ -14,12 +14,12 @@ load_dotenv()
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
 AGENT_NAME = os.getenv("AGENT_DISPLAY_NAME")
-SESSION_ID = os.getenv("TEST_SESSION_ID", "session_test_abc")
-prompt_text = os.getenv("TEST_PROMPT_AAPL", "AAPL")
+# SESSION_ID = os.getenv("TEST_SESSION_ID", "session_test_abc") # Comentado para crear una sesión por prompt
+# prompt_text = os.getenv("TEST_PROMPT_AAPL", "AAPL") # Comentado para usar prompts de archivo
 
 def main():
     """
-    Script principal para encontrar un agente, crear/obtener una sesión y ejecutar una consulta.
+    Script principal para encontrar un agente, crear/obtener una sesión y ejecutar múltiples consultas.
     """
     vertexai.init(project=PROJECT_ID, location=LOCATION)
 
@@ -34,33 +34,50 @@ def main():
     engine = engines[0]
     print(f"Agente encontrado: {engine.resource_name}")
 
-    # --- 2. Obtener o Crear la Sesión ---
-    # Esta lógica es más robusta: intenta obtener la sesión y si no existe, la crea.
+    # Lee los prompts desde el archivo
+    prompts_file = os.path.join(os.path.dirname(__file__), "prompts.txt")
     try:
-        print(f"Intentando obtener la sesión: '{SESSION_ID}'...")
-        session = engine.get_session(session_id=SESSION_ID)
-        print("Sesión existente encontrada.")
-    except Exception:
-        print("No se encontró la sesión. Creando una nueva...")
-        session = engine.create_session(session_id=SESSION_ID)
-        print("Nueva sesión creada.")
-    
-    print(f"ID de Sesión: {session.id}")
+        with open(prompts_file, "r", encoding="utf-8") as f:
+            prompts = [line.strip() for line in f if line.strip()]
+    except FileNotFoundError:
+        print(f"Error: El archivo de prompts no se encontró en {prompts_file}")
+        sys.exit(1)
 
-    # --- 3. Ejecutar el Agente ---
-    print("\nEnviando consulta al agente...")
-    print(f">> {prompt_text}")
+    print(f"--- Iniciando prueba con {len(prompts)} prompts ---")
 
-    output = engine.agent_run(
-        session_id=SESSION_ID,
-        message=types.Content(
-            parts=[types.Part(text=prompt_text)],
-            role="user",
-        ).model_dump_json(),
-    )
+    # Itera sobre cada prompt
+    for i, prompt_text in enumerate(prompts):
+        print(f"\n==================================================")
+        print(f"  PROMPT {i + 1}/{len(prompts)}: {prompt_text}")
+        print(f"==================================================")
 
-    print("\n--- Respuesta del Agente ---")
-    print(output)
+        # Crea una nueva sesión para cada prompt para mantener las conversaciones aisladas
+        # Esta lógica es más robusta: intenta obtener la sesión y si no existe, la crea.
+        try:
+            print(f"Intentando obtener la sesión: 'session_test_{i}'...")
+            session = engine.get_session(session_id=f"session_test_{i}")
+            print("Sesión existente encontrada.")
+        except Exception:
+            print("No se encontró la sesión. Creando una nueva...")
+            session = engine.create_session(session_id=f"session_test_{i}")
+            print("Nueva sesión creada.")
+        
+        print(f"ID de Sesión: {session.id}")
+
+        # --- 3. Ejecutar el Agente ---
+        print("\nEnviando consulta al agente...")
+        print(f">> {prompt_text}")
+
+        output = engine.agent_run(
+            session_id=session.id,
+            message=types.Content(
+                parts=[types.Part(text=prompt_text)],
+                role="user",
+            ).model_dump_json(),
+        )
+
+        print("\n--- Respuesta del Agente ---")
+        print(output)
 
 if __name__ == "__main__":
     main()

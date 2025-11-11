@@ -19,6 +19,13 @@ from dotenv import load_dotenv
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Get the specific logger used by ADK.
+adk_logger = logging.getLogger("google_adk")
+
+# Set its level to DEBUG to ensure you capture ALL messages from the SDK,
+# even if the general level is higher (like INFO).
+adk_logger.setLevel(logging.DEBUG)
+
 # Load environment variables
 load_dotenv()
 
